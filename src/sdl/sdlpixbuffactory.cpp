@@ -24,8 +24,8 @@
 #include "config.h"
 
 #include <stdexcept>
-#include <SDL.h>
-#include <SDL_image.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <glib.h>
 
 #include "sdl/sdlpixbuffactory.hpp"
@@ -65,12 +65,10 @@ Pixbuf *SDLPixbufFactory::create_composite_color(Pixbuf const &src, const GdColo
     unsigned char r, g, b;
     c.get_rgb(r, g, b);
     SDL_FillRect(rect, NULL, SDL_MapRGB(rect->format, r, g, b));
-    SDL_SetAlpha(rect, SDL_SRCALPHA, a);
 
     SDL_Surface *ret = SDL_CreateRGBSurface(0, srcsdl.get_surface()->w, srcsdl.get_surface()->h, 32, srcsdl.rmask, srcsdl.gmask, srcsdl.bmask, srcsdl.amask);
     if (!ret)
         throw std::runtime_error(std::string("could not create surface: ") + SDL_GetError());
-    SDL_SetAlpha(srcsdl.get_surface(), 0, 255);
     SDL_BlitSurface(srcsdl.get_surface(), NULL, ret, NULL);
     SDL_BlitSurface(rect, NULL, ret, NULL);
     SDL_FreeSurface(rect);

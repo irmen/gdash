@@ -40,6 +40,9 @@ private:
     GLuint glprogram;
     std::vector<GLuint> shaders;
     GLuint texture;
+    
+    SDL_Window* window;
+    SDL_GLContext context;
 
     /// used when loading the xml
     std::string shadertext;

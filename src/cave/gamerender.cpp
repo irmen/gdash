@@ -185,7 +185,7 @@ bool GameRenderer::cave_scroll(int logical_size, int physical_size, int center, 
 
 * scrolling is a bit complicated. different caves have different speeds, and
 * also the game rendering can be run at different speeds (depending on the
-* refresh rate of the user's display, if the opengl driver is selected). so
+* refresh rate of the user's display). so
 * first a pixel/frame scrolling speed is calculated using the measured delay
 * and the cave speed.
 * 

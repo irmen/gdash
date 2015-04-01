@@ -23,7 +23,7 @@
 
 #include "config.h"
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 #include "sdl/sdlgameinputhandler.hpp"
 #include "settings.hpp"
@@ -45,7 +45,7 @@ GameInputHandler::KeyAssignment SDLGameInputHandler::keys_array[] = {
 
 
 char const *SDLGameInputHandler::get_key_name_from_keycode(int gfxlib_keycode) {
-    return SDL_GetKeyName(SDLKey(gfxlib_keycode));
+    return SDL_GetKeyName(SDL_Keycode(gfxlib_keycode));
 }
 
 

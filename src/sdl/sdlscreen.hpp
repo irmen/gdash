@@ -35,6 +35,10 @@ class SDLScreen: public SDLAbstractScreen {
 private:
     SDLScreen(const SDLScreen &);       // not impl
     SDLScreen &operator=(const SDLScreen &);    // not impl
+    
+    SDL_Window *window;
+    SDL_Renderer *renderer;
+    SDL_Texture *texture;
 
 public:
     SDLScreen(PixbufFactory &pixbuf_factory);

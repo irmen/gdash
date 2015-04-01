@@ -114,7 +114,7 @@ static Activity::KeyCode activity_keycode_from_sdl_key_event(SDL_KeyboardEvent c
             return App::Escape;
 
         default:
-            return ev.keysym.unicode;
+            return ev.keysym.sym;
     }
 }
 
@@ -189,8 +189,9 @@ static void run_the_app(App &the_app, NextAction &na) {
                 case SDL_KEYUP:
                     the_app.gameinput->keyrelease(ev.key.keysym.sym);
                     break;
-                case SDL_VIDEOEXPOSE:
-                    the_app.redraw_event(true);
+                case SDL_WINDOWEVENT:
+                    if (ev.window.event == SDL_WINDOWEVENT_EXPOSED)
+                        the_app.redraw_event(true);
                     break;
                 case SDL_USEREVENT:
                     had_timer_event1 = true;
@@ -261,7 +262,6 @@ static void run_the_app(App &the_app, NextAction &na) {
         SDL_RemoveTimer(timer_id);
 }
 
-
 void gd_main_window_sdl_run(CaveSet *caveset, NextAction &na, bool opengl) {
     SDLPixbufFactory pf;
     Screen *screen;
@@ -289,13 +289,11 @@ void gd_main_window_sdl_run(CaveSet *caveset, NextAction &na, bool opengl) {
 }
 
 
+/** @todo opengl törölni */
 void gd_main_window_sdl_run_a_game(GameControl *game, bool opengl) {
     SDLPixbufFactory pf;
     Screen *screen;
-    if (opengl)
-        screen = new SDLNewOGLScreen(pf);
-    else
-        screen = new SDLScreen(pf);
+    screen = new SDLScreen(pf);
 
     {
         SDLApp the_app(*screen);

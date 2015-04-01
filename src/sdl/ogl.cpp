@@ -101,16 +101,15 @@ void SDLNewOGLScreen::set_properties(int scaling_factor_, GdScalingType scaling_
 
 Pixmap *SDLNewOGLScreen::create_pixmap_from_pixbuf(Pixbuf const &pb, bool keep_alpha) const {
     SDL_Surface *to_copy = static_cast<SDLPixbuf const &>(pb).get_surface();
-    SDL_Surface *newsurface = SDL_CreateRGBSurface(keep_alpha ? SDL_SRCALPHA : 0, to_copy->w, to_copy->h, 32,
+    SDL_Surface *newsurface = SDL_CreateRGBSurface(0, to_copy->w, to_copy->h, 32,
                               surface->format->Rmask, surface->format->Gmask, surface->format->Bmask, surface->format->Amask);
-    SDL_SetAlpha(to_copy, 0, SDL_ALPHA_OPAQUE);
     SDL_BlitSurface(to_copy, NULL, newsurface, NULL);
     return new SDLPixmap(newsurface);
 }
 
 
 void SDLNewOGLScreen::set_title(char const *title) {
-    SDL_WM_SetCaption(title, NULL);
+    SDL_SetWindowTitle(window, title);
 }
 
 
@@ -206,18 +205,10 @@ void SDLNewOGLScreen::configure_size() {
 
     /* init screen */
     SDL_InitSubSystem(SDL_INIT_VIDEO);
-    /* for some reason, keyboard settings must be done here */
-    SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
-    SDL_EnableUNICODE(1);
-    /* icon */
-    SDL_RWops *rwop = SDL_RWFromConstMem(Screen::gdash_icon_32_png, Screen::gdash_icon_32_size);
-    SDL_Surface *icon = IMG_Load_RW(rwop, 1);  // 1 = automatically closes rwop
-    SDL_WM_SetIcon(icon, NULL);
-    SDL_FreeSurface(icon);
 
     /* create buffer */
-    surface = SDL_CreateRGBSurface(SDL_SRCALPHA, w, h, 32, Pixbuf::rmask, Pixbuf::gmask, Pixbuf::bmask, Pixbuf::amask);
-    Uint32 col = SDL_MapRGBA(surface->format, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    surface = SDL_CreateRGBSurface(0, w, h, 32, Pixbuf::rmask, Pixbuf::gmask, Pixbuf::bmask, Pixbuf::amask);
+    Uint32 col = SDL_MapRGB(surface->format, 0, 0, 0);
     SDL_FillRect(surface, NULL, col);
 
     /* create screen */
@@ -228,18 +219,27 @@ void SDLNewOGLScreen::configure_size() {
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);    // no need to have one
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     /* if doing fine scrolling, try to swap every frame. otherwise, every second frame. */
-    SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, gd_fine_scroll ? 1 : 2);
+    SDL_GL_SetSwapInterval(-1);
 
-    Uint32 flags = SDL_OPENGL;
-    SDL_Surface *surface = SDL_SetVideoMode(w*oglscaling, h*oglscaling, 0, flags | (gd_fullscreen ? SDL_FULLSCREEN : 0));
-    if (gd_fullscreen && !surface)
-        surface = SDL_SetVideoMode(w*oglscaling, h*oglscaling, 0, flags);      // try the same, without fullscreen
-    if (!surface)
-        throw std::runtime_error("cannot initialize sdl video");
+    if (gd_fullscreen)
+        window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w * oglscaling, h * oglscaling, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN);
+    else
+        window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w * oglscaling, h * oglscaling, SDL_WINDOW_OPENGL);
+    if (!window)
+        throw ScreenConfigureException("cannot initialize sdl video");
+    context = SDL_GL_CreateContext(window);
+
     /* do not show mouse cursor */
     SDL_ShowCursor(SDL_DISABLE);
     /* warp mouse pointer so cursor cannot be seen, if the above call did nothing for some reason */
-    SDL_WarpMouse(w - 1, h - 1);
+    SDL_WarpMouseInWindow(window, w - 1, h - 1);
+
+    /* icon & title */
+    SDL_RWops *rwop = SDL_RWFromConstMem(Screen::gdash_icon_32_png, Screen::gdash_icon_32_size);
+    SDL_Surface *icon = IMG_Load_RW(rwop, 1);  // 1 = automatically closes rwop
+    SDL_SetWindowIcon(window, icon);
+    SDL_FreeSurface(icon);
+    set_title("GDash");
 
     {
         /* report parameters got. */
@@ -248,7 +248,7 @@ void SDLNewOGLScreen::configure_size() {
         SDL_GL_GetAttribute(SDL_GL_GREEN_SIZE,   &green);
         SDL_GL_GetAttribute(SDL_GL_BLUE_SIZE,    &blue);
         SDL_GL_GetAttribute(SDL_GL_DOUBLEBUFFER, &double_buffer);
-        SDL_GL_GetAttribute(SDL_GL_SWAP_CONTROL, &swap_control);
+        swap_control = SDL_GL_GetSwapInterval();
         gd_debug(CPrintf("red:%d green:%d blue:%d double_buffer:%d swap_control:%d")
                  % red % green % blue % double_buffer % swap_control);
 
@@ -347,7 +347,7 @@ void SDLNewOGLScreen::configure_size() {
             /* configure the program with sizes */
             set_uniform_2float("rubyInputSize", w, h);
             set_uniform_2float("rubyTextureSize", w, h);
-            set_uniform_2float("rubyOutputSize", w*oglscaling, h*oglscaling);
+            set_uniform_2float("rubyOutputSize", w * oglscaling, h * oglscaling);
         } catch (std::exception const & e) {
             set_texture_bilinear(false);
             gd_warning(e.what());
@@ -397,13 +397,18 @@ void SDLNewOGLScreen::uninit() {
         my_glDeleteProgram(glprogram);
     glprogram = 0;
     /* delete sdl stuff */
+    if (context != NULL)
+        SDL_GL_DeleteContext(context);
+    context = NULL;
     if (surface != NULL)
         SDL_FreeSurface(surface);
     surface = NULL;
+    if (window)
+        SDL_DestroyWindow(window);
+    window = NULL;
     if (SDL_WasInit(SDL_INIT_VIDEO))
         SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
-
 
 void SDLNewOGLScreen::flip() {
     glClear(GL_COLOR_BUFFER_BIT);
@@ -437,12 +442,10 @@ void SDLNewOGLScreen::flip() {
     /* and now draw a retangle */
     glBegin(GL_TRIANGLE_STRIP);
     glTexCoord2f(0, 0); glVertex2f(0, 0);
-    glTexCoord2f(1, 0); glVertex2f(w*oglscaling, 0);
-    glTexCoord2f(0, 1); glVertex2f(0, h*oglscaling);
-    glTexCoord2f(1, 1); glVertex2f(w*oglscaling, h*oglscaling);
+    glTexCoord2f(1, 0); glVertex2f(w * oglscaling, 0);
+    glTexCoord2f(0, 1); glVertex2f(0, h * oglscaling);
+    glTexCoord2f(1, 1); glVertex2f(w * oglscaling, h * oglscaling);
     glEnd();
 
-    SDL_GL_SwapBuffers();
+    SDL_GL_SwapWindow(window);
 }
-
-

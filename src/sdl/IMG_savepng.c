@@ -25,8 +25,7 @@
  * 11/08/2004 - Compr fix, levels -1,1-7 now work - Tyler Montbriand
  */
 #include <stdlib.h>
-#include <SDL/SDL.h>
-#include <SDL/SDL_byteorder.h>
+#include <SDL2/SDL.h>
 #include <png.h>
 #include <zlib.h>
 #include "IMG_savepng.h"
@@ -56,8 +55,8 @@ int IMG_SavePNG_RW(SDL_RWops *src, SDL_Surface *surf,int compression) {
     png_infop info_ptr;
     SDL_PixelFormat *fmt=NULL;
     SDL_Surface *tempsurf=NULL;
-    int ret,funky_format,used_alpha;
-    unsigned int i,temp_alpha;
+    int ret,funky_format;
+    unsigned int i;
     png_colorp palette;
     Uint8 *palette_alpha=NULL;
     png_byte **row_pointers=NULL;
@@ -123,19 +122,6 @@ int IMG_SavePNG_RW(SDL_RWops *src, SDL_Surface *surf,int compression) {
             palette[i].blue=fmt->palette->colors[i].b;
         }
         png_set_PLTE(png_ptr,info_ptr,palette,fmt->palette->ncolors);
-        if (surf->flags&SDL_SRCCOLORKEY) {
-            palette_alpha=(Uint8 *)malloc((fmt->colorkey+1)*sizeof(Uint8));
-            if (!palette_alpha) {
-                SDL_SetError("Couldn't create memory for palette transparency");
-                goto savedone;
-            }
-            /* FIXME: memset? */
-            for (i=0; i<(fmt->colorkey+1); i++) {
-                palette_alpha[i]=255;
-            }
-            palette_alpha[fmt->colorkey]=0;
-            png_set_tRNS(png_ptr,info_ptr,palette_alpha,fmt->colorkey+1,NULL);
-        }
     } else { /* Truecolor */
         if (fmt->Amask) {
             png_set_IHDR(png_ptr,info_ptr,
@@ -227,20 +213,10 @@ int IMG_SavePNG_RW(SDL_RWops *src, SDL_Surface *surf,int compression) {
                 SDL_SetError("Couldn't allocate temp surface");
                 goto savedone;
             }
-            if (surf->flags&SDL_SRCALPHA) {
-                temp_alpha=fmt->alpha;
-                used_alpha=1;
-                SDL_SetAlpha(surf,0,255); /* Set for an opaque blit */
-            } else {
-                used_alpha=0;
-            }
             if (SDL_BlitSurface(surf,NULL,tempsurf,NULL)!=0) {
                 SDL_SetError("Couldn't blit surface to temp surface");
                 SDL_FreeSurface(tempsurf);
                 goto savedone;
-            }
-            if (used_alpha) {
-                SDL_SetAlpha(surf,SDL_SRCALPHA,(Uint8)temp_alpha); /* Restore alpha settings*/
             }
             for (i=0; i<tempsurf->h; i++) {
                 row_pointers[i]= ((png_byte *)tempsurf->pixels) + i*tempsurf->pitch;

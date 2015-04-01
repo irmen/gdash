@@ -211,9 +211,9 @@ sdlsources = \
 	sdl/sdlabstractscreen.cpp \
 	sdl/sdlscreen.cpp \
 	sdl/sdlpixbuffactory.cpp \
-	sdl/ogl.cpp \
 	sdl/sdlgameinputhandler.cpp \
 	sdl/sdlmainwindow.cpp \
+	sdl/ogl.cpp \
 	sdl/IMG_savepng.c
 
 sdlheaders = \
@@ -223,9 +223,9 @@ sdlheaders = \
 	sdl/sdlabstractscreen.hpp \
 	sdl/sdlscreen.hpp \
 	sdl/sdlpixbuffactory.hpp \
-	sdl/ogl.hpp \
 	sdl/sdlgameinputhandler.hpp \
 	sdl/sdlmainwindow.hpp \
+	sdl/ogl.hpp \
 	sdl/IMG_savepng.h
 
 

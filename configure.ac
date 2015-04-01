@@ -61,8 +61,8 @@ fi
 AM_CONDITIONAL(SDL, test x"$with_sdl" = "xyes")
 if test x"$with_sdl" = "xyes" ; then
   AC_DEFINE(HAVE_SDL,,[Use SDL.])
-  AM_PATH_SDL(1.2.0, :, AC_MSG_ERROR(Test for SDL failed. See the file 'INSTALL' for help.))
-  SDL_LIBS="$SDL_LIBS -lSDL_mixer -lSDL_image"
+  AM_PATH_SDL2(2.0.0, :, AC_MSG_ERROR(Test for SDL failed. See the file 'INSTALL' for help.))
+  SDL_LIBS="$SDL_LIBS -lSDL2_mixer -lSDL2_image"
   AX_CHECK_GL
 else
   GL_CFLAGS=""

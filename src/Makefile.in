@@ -146,9 +146,8 @@ am__gdash_SOURCES_DIST = misc/printf.cpp cave/colors.cpp \
 	gtk/gtkapp.cpp gtk/gtkmainwindow.cpp \
 	framework/shadermanager.cpp framework/volumeactivity.cpp \
 	sdl/sdlpixbuf.cpp sdl/sdlabstractscreen.cpp sdl/sdlscreen.cpp \
-	sdl/sdlpixbuffactory.cpp sdl/ogl.cpp \
-	sdl/sdlgameinputhandler.cpp sdl/sdlmainwindow.cpp \
-	sdl/IMG_savepng.c
+	sdl/sdlpixbuffactory.cpp sdl/sdlgameinputhandler.cpp \
+	sdl/sdlmainwindow.cpp sdl/ogl.cpp sdl/IMG_savepng.c
 am__dirstamp = $(am__leading_dot)dirstamp
 am__objects_1 = misc/gdash-printf.$(OBJEXT) \
 	cave/gdash-colors.$(OBJEXT) cave/gdash-cavetypes.$(OBJEXT) \
@@ -234,9 +233,9 @@ am__objects_4 = framework/gdash-shadermanager.$(OBJEXT) \
 	sdl/gdash-sdlpixbuf.$(OBJEXT) \
 	sdl/gdash-sdlabstractscreen.$(OBJEXT) \
 	sdl/gdash-sdlscreen.$(OBJEXT) \
-	sdl/gdash-sdlpixbuffactory.$(OBJEXT) sdl/gdash-ogl.$(OBJEXT) \
+	sdl/gdash-sdlpixbuffactory.$(OBJEXT) \
 	sdl/gdash-sdlgameinputhandler.$(OBJEXT) \
-	sdl/gdash-sdlmainwindow.$(OBJEXT) \
+	sdl/gdash-sdlmainwindow.$(OBJEXT) sdl/gdash-ogl.$(OBJEXT) \
 	sdl/gdash-IMG_savepng.$(OBJEXT)
 @SDL_TRUE@am__objects_5 = $(am__objects_4)
 am__objects_6 = $(am__objects_1) $(am__objects_3) $(am__objects_5)
@@ -386,8 +385,8 @@ PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 POSUB = @POSUB@
+SDL2_CONFIG = @SDL2_CONFIG@
 SDL_CFLAGS = @SDL_CFLAGS@
-SDL_CONFIG = @SDL_CONFIG@
 SDL_LIBS = @SDL_LIBS@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
@@ -653,9 +652,9 @@ sdlsources = \
 	sdl/sdlabstractscreen.cpp \
 	sdl/sdlscreen.cpp \
 	sdl/sdlpixbuffactory.cpp \
-	sdl/ogl.cpp \
 	sdl/sdlgameinputhandler.cpp \
 	sdl/sdlmainwindow.cpp \
+	sdl/ogl.cpp \
 	sdl/IMG_savepng.c
 
 sdlheaders = \
@@ -665,9 +664,9 @@ sdlheaders = \
 	sdl/sdlabstractscreen.hpp \
 	sdl/sdlscreen.hpp \
 	sdl/sdlpixbuffactory.hpp \
-	sdl/ogl.hpp \
 	sdl/sdlgameinputhandler.hpp \
 	sdl/sdlmainwindow.hpp \
+	sdl/ogl.hpp \
 	sdl/IMG_savepng.h
 
 noinst_HEADERS = \
@@ -1023,11 +1022,11 @@ sdl/gdash-sdlscreen.$(OBJEXT): sdl/$(am__dirstamp) \
 	sdl/$(DEPDIR)/$(am__dirstamp)
 sdl/gdash-sdlpixbuffactory.$(OBJEXT): sdl/$(am__dirstamp) \
 	sdl/$(DEPDIR)/$(am__dirstamp)
-sdl/gdash-ogl.$(OBJEXT): sdl/$(am__dirstamp) \
-	sdl/$(DEPDIR)/$(am__dirstamp)
 sdl/gdash-sdlgameinputhandler.$(OBJEXT): sdl/$(am__dirstamp) \
 	sdl/$(DEPDIR)/$(am__dirstamp)
 sdl/gdash-sdlmainwindow.$(OBJEXT): sdl/$(am__dirstamp) \
+	sdl/$(DEPDIR)/$(am__dirstamp)
+sdl/gdash-ogl.$(OBJEXT): sdl/$(am__dirstamp) \
 	sdl/$(DEPDIR)/$(am__dirstamp)
 sdl/gdash-IMG_savepng.$(OBJEXT): sdl/$(am__dirstamp) \
 	sdl/$(DEPDIR)/$(am__dirstamp)
@@ -2500,20 +2499,6 @@ sdl/gdash-sdlpixbuffactory.obj: sdl/sdlpixbuffactory.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gdash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o sdl/gdash-sdlpixbuffactory.obj `if test -f 'sdl/sdlpixbuffactory.cpp'; then $(CYGPATH_W) 'sdl/sdlpixbuffactory.cpp'; else $(CYGPATH_W) '$(srcdir)/sdl/sdlpixbuffactory.cpp'; fi`
 
-sdl/gdash-ogl.o: sdl/ogl.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gdash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT sdl/gdash-ogl.o -MD -MP -MF sdl/$(DEPDIR)/gdash-ogl.Tpo -c -o sdl/gdash-ogl.o `test -f 'sdl/ogl.cpp' || echo '$(srcdir)/'`sdl/ogl.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sdl/$(DEPDIR)/gdash-ogl.Tpo sdl/$(DEPDIR)/gdash-ogl.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sdl/ogl.cpp' object='sdl/gdash-ogl.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gdash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o sdl/gdash-ogl.o `test -f 'sdl/ogl.cpp' || echo '$(srcdir)/'`sdl/ogl.cpp
-
-sdl/gdash-ogl.obj: sdl/ogl.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gdash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT sdl/gdash-ogl.obj -MD -MP -MF sdl/$(DEPDIR)/gdash-ogl.Tpo -c -o sdl/gdash-ogl.obj `if test -f 'sdl/ogl.cpp'; then $(CYGPATH_W) 'sdl/ogl.cpp'; else $(CYGPATH_W) '$(srcdir)/sdl/ogl.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sdl/$(DEPDIR)/gdash-ogl.Tpo sdl/$(DEPDIR)/gdash-ogl.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sdl/ogl.cpp' object='sdl/gdash-ogl.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gdash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o sdl/gdash-ogl.obj `if test -f 'sdl/ogl.cpp'; then $(CYGPATH_W) 'sdl/ogl.cpp'; else $(CYGPATH_W) '$(srcdir)/sdl/ogl.cpp'; fi`
-
 sdl/gdash-sdlgameinputhandler.o: sdl/sdlgameinputhandler.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gdash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT sdl/gdash-sdlgameinputhandler.o -MD -MP -MF sdl/$(DEPDIR)/gdash-sdlgameinputhandler.Tpo -c -o sdl/gdash-sdlgameinputhandler.o `test -f 'sdl/sdlgameinputhandler.cpp' || echo '$(srcdir)/'`sdl/sdlgameinputhandler.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sdl/$(DEPDIR)/gdash-sdlgameinputhandler.Tpo sdl/$(DEPDIR)/gdash-sdlgameinputhandler.Po
@@ -2541,6 +2526,20 @@ sdl/gdash-sdlmainwindow.obj: sdl/sdlmainwindow.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sdl/sdlmainwindow.cpp' object='sdl/gdash-sdlmainwindow.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gdash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o sdl/gdash-sdlmainwindow.obj `if test -f 'sdl/sdlmainwindow.cpp'; then $(CYGPATH_W) 'sdl/sdlmainwindow.cpp'; else $(CYGPATH_W) '$(srcdir)/sdl/sdlmainwindow.cpp'; fi`
+
+sdl/gdash-ogl.o: sdl/ogl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gdash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT sdl/gdash-ogl.o -MD -MP -MF sdl/$(DEPDIR)/gdash-ogl.Tpo -c -o sdl/gdash-ogl.o `test -f 'sdl/ogl.cpp' || echo '$(srcdir)/'`sdl/ogl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sdl/$(DEPDIR)/gdash-ogl.Tpo sdl/$(DEPDIR)/gdash-ogl.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sdl/ogl.cpp' object='sdl/gdash-ogl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gdash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o sdl/gdash-ogl.o `test -f 'sdl/ogl.cpp' || echo '$(srcdir)/'`sdl/ogl.cpp
+
+sdl/gdash-ogl.obj: sdl/ogl.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gdash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT sdl/gdash-ogl.obj -MD -MP -MF sdl/$(DEPDIR)/gdash-ogl.Tpo -c -o sdl/gdash-ogl.obj `if test -f 'sdl/ogl.cpp'; then $(CYGPATH_W) 'sdl/ogl.cpp'; else $(CYGPATH_W) '$(srcdir)/sdl/ogl.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) sdl/$(DEPDIR)/gdash-ogl.Tpo sdl/$(DEPDIR)/gdash-ogl.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='sdl/ogl.cpp' object='sdl/gdash-ogl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gdash_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o sdl/gdash-ogl.obj `if test -f 'sdl/ogl.cpp'; then $(CYGPATH_W) 'sdl/ogl.cpp'; else $(CYGPATH_W) '$(srcdir)/sdl/ogl.cpp'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

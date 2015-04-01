@@ -23,7 +23,7 @@
 
 #include "config.h"
 
-#include <SDL_image.h>
+#include <SDL2/SDL_image.h>
 #include <stdexcept>
 
 #include "cave/colors.hpp"
@@ -42,7 +42,6 @@ int SDLPixbuf::get_height() const {
 
 SDLPixbuf::SDLPixbuf(int w, int h) {
     surface = SDL_CreateRGBSurface(0, w, h, 32, rmask, gmask, bmask, amask);
-    SDL_SetAlpha(surface, SDL_SRCALPHA, SDL_ALPHA_OPAQUE);
     if (!surface)
         throw std::runtime_error(std::string("could not create surface: ") + SDL_GetError());
 }
@@ -53,8 +52,7 @@ SDLPixbuf::SDLPixbuf(SDL_Surface *surface_)
     /* if the r/g/b/masks do not match our preset values, the image is not stored in R,G,B,[A] byte order
      * in memory. so convert it. */
     if (surface->format->BytesPerPixel != 4 || surface->format->Rmask != rmask || surface->format->Gmask != gmask || surface->format->Bmask != bmask) {
-        SDL_Surface *newsurface = SDL_CreateRGBSurface(SDL_SRCALPHA, surface->w, surface->h, 32, rmask, gmask, bmask, amask);
-        SDL_SetAlpha(surface, 0, SDL_ALPHA_OPAQUE);
+        SDL_Surface *newsurface = SDL_CreateRGBSurface(0, surface->w, surface->h, 32, rmask, gmask, bmask, amask);
         SDL_BlitSurface(surface, NULL, newsurface, NULL);
         SDL_FreeSurface(surface);
         surface = newsurface;
@@ -87,7 +85,6 @@ void SDLPixbuf::blit_full(int x, int y, int w, int h, Pixbuf &dest, int dx, int 
     src.h = h;
     dst.x = dx;
     dst.y = dy;
-    SDL_SetAlpha(surface, SDL_SRCALPHA, SDL_ALPHA_OPAQUE);
     SDL_BlitSurface(surface, &src, static_cast<SDLPixbuf &>(dest).surface, &dst);
 }
 
@@ -100,7 +97,6 @@ void SDLPixbuf::copy_full(int x, int y, int w, int h, Pixbuf &dest, int dx, int 
     src.h = h;
     dst.x = dx;
     dst.y = dy;
-    SDL_SetAlpha(surface, 0, SDL_ALPHA_OPAQUE);
     SDL_BlitSurface(surface, &src, static_cast<SDLPixbuf &>(dest).surface, &dst);
 }
 

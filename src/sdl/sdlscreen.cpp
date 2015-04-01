@@ -25,7 +25,7 @@
 
 #include <stdexcept>
 #include <memory>
-#include <SDL_image.h>
+#include <SDL2/SDL_image.h>
 
 #include "sdl/sdlscreen.hpp"
 #include "sdl/sdlpixbuf.hpp"
@@ -36,67 +36,79 @@
 
 
 SDLScreen::SDLScreen(PixbufFactory &pixbuf_factory)
-    : SDLAbstractScreen(pixbuf_factory) {
-    surface = NULL;
+    : SDLAbstractScreen(pixbuf_factory)
+    , window(NULL)
+    , renderer(NULL)
+    , texture(NULL) {
 }
 
 
 SDLScreen::~SDLScreen() {
+    if (texture)
+        SDL_DestroyTexture(texture);
+    if (renderer)
+        SDL_DestroyRenderer(renderer);
+    if (window)
+        SDL_DestroyWindow(window);
     if (SDL_WasInit(SDL_INIT_VIDEO))
         SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
 
+/** @todo can this be called multiple times? if so, renderer, surface etc should be destroyed first */
 void SDLScreen::configure_size() {
     /* close window, if already exists, to create a new one */
     if (SDL_WasInit(SDL_INIT_VIDEO))
         SDL_QuitSubSystem(SDL_INIT_VIDEO);
     /* init screen */
     SDL_InitSubSystem(SDL_INIT_VIDEO);
-    /* for some reason, keyboard settings must be done here */
-    SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
-    SDL_EnableUNICODE(1);
-    /* icon */
-    SDL_RWops *rwop = SDL_RWFromConstMem(Screen::gdash_icon_32_png, Screen::gdash_icon_32_size);
-    SDL_Surface *icon = IMG_Load_RW(rwop, 1);  // 1 = automatically closes rwop
-    SDL_WM_SetIcon(icon, NULL);
-    SDL_FreeSurface(icon);
-    set_title("GDash");
 
     /* create screen */
-    Uint32 flags = SDL_ANYFORMAT;
-    surface = SDL_SetVideoMode(w, h, 0, flags | (gd_fullscreen ? SDL_FULLSCREEN : 0));
-    if (gd_fullscreen && !surface)
-        surface = SDL_SetVideoMode(w, h, 0, flags);        // try the same, without fullscreen
-    if (!surface)
+    surface = SDL_CreateRGBSurface(0, w, h, 32, Pixbuf::rmask, Pixbuf::gmask, Pixbuf::bmask, Pixbuf::amask);
+    if (gd_fullscreen)
+        window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
+    else
+        window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w, h, 0);
+    if (!window)
         throw ScreenConfigureException("cannot initialize sdl video");
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    SDL_RenderSetLogicalSize(renderer, w, h);
+    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, w, h);
+    
     /* do not show mouse cursor */
     SDL_ShowCursor(SDL_DISABLE);
     /* warp mouse pointer so cursor cannot be seen, if the above call did nothing for some reason */
-    SDL_WarpMouse(w - 1, h - 1);
+    SDL_WarpMouseInWindow(window, w - 1, h - 1);
+
+    /* icon & title */
+    SDL_RWops *rwop = SDL_RWFromConstMem(Screen::gdash_icon_32_png, Screen::gdash_icon_32_size);
+    SDL_Surface *icon = IMG_Load_RW(rwop, 1);  // 1 = automatically closes rwop
+    SDL_SetWindowIcon(window, icon);
+    SDL_FreeSurface(icon);
+    set_title("GDash");
 }
 
 
 void SDLScreen::set_title(char const *title) {
-    SDL_WM_SetCaption(title, NULL);
+    SDL_SetWindowTitle(window, title);
 }
 
 
 bool SDLScreen::must_redraw_all_before_flip() const {
-    if (surface == NULL)
-        return false;
-    /* if we have double buffering, all stuff must be redrawn before flips. */
-    /* unused currently, but could be used for directx */
-    return (surface->flags & SDL_DOUBLEBUF) != 0;
+    return false;
 }
 
 
 void SDLScreen::flip() {
-    SDL_Flip(surface);
+    SDL_UpdateTexture(texture, NULL, surface->pixels, surface->w * sizeof (Uint32));
+    SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, texture, NULL, NULL);
+    SDL_RenderPresent(renderer);
 }
 
 
 Pixmap *SDLScreen::create_pixmap_from_pixbuf(Pixbuf const &pb, bool keep_alpha) const {
     SDLPixbuf const &sdlpb = static_cast<SDLPixbuf const &>(pb);
-    return new SDLPixmap(keep_alpha ? SDL_DisplayFormatAlpha(sdlpb.get_surface()) : SDL_DisplayFormat(sdlpb.get_surface()));
+    SDL_Surface *newsurface = SDL_ConvertSurface(sdlpb.get_surface(), surface->format, 0);
+    return new SDLPixmap(newsurface);
 }

@@ -26,7 +26,7 @@
 /* the replay saver thing only works in the sdl version */
 #ifdef HAVE_SDL
 
-#include <SDL/SDL_mixer.h>
+#include <SDL2/SDL_mixer.h>
 #include <glib/gi18n.h>
 
 #include "framework/replaysaveractivity.hpp"
@@ -66,9 +66,11 @@ public:
 
 Pixmap *SDLInmemoryScreen::create_pixmap_from_pixbuf(Pixbuf const &pb, bool keep_alpha) const {
     SDL_Surface *to_copy = static_cast<SDLPixbuf const &>(pb).get_surface();
-    SDL_Surface *newsurface = SDL_CreateRGBSurface(keep_alpha ? SDL_SRCALPHA : 0, to_copy->w, to_copy->h, 32,
+    //~ SDL_Surface *newsurface = SDL_CreateRGBSurface(keep_alpha ? SDL_SRCALPHA : 0, to_copy->w, to_copy->h, 32,
+                              //~ surface->format->Rmask, surface->format->Gmask, surface->format->Bmask, surface->format->Amask);
+    //~ SDL_SetAlpha(to_copy, 0, SDL_ALPHA_OPAQUE);
+    SDL_Surface *newsurface = SDL_CreateRGBSurface(0, to_copy->w, to_copy->h, 32,
                               surface->format->Rmask, surface->format->Gmask, surface->format->Bmask, surface->format->Amask);
-    SDL_SetAlpha(to_copy, 0, SDL_ALPHA_OPAQUE);
     SDL_BlitSurface(to_copy, NULL, newsurface, NULL);
     return new SDLInmemoryPixmap(newsurface);
 }
@@ -82,7 +84,8 @@ void SDLInmemoryScreen::set_title(char const *) {
 void SDLInmemoryScreen::configure_size() {
     if (surface)
         SDL_FreeSurface(surface);
-    surface = SDL_CreateRGBSurface(SDL_SRCALPHA, w, h, 32, Pixbuf::rmask, Pixbuf::gmask, Pixbuf::bmask, Pixbuf::amask);
+    //~ surface = SDL_CreateRGBSurface(SDL_SRCALPHA, w, h, 32, Pixbuf::rmask, Pixbuf::gmask, Pixbuf::bmask, Pixbuf::amask);
+    surface = SDL_CreateRGBSurface(0, w, h, 32, Pixbuf::rmask, Pixbuf::gmask, Pixbuf::bmask, Pixbuf::amask);
     Uint32 col = SDL_MapRGBA(surface->format, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_FillRect(surface, NULL, col);
 }
