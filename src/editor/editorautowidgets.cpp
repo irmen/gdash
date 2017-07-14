@@ -332,7 +332,7 @@ EditorAutoUpdate::EditorAutoUpdate(Reflective *r, Reflective *def, PropertyDescr
         expand_vertically(false),
         cave_update_cb(cave_update_cb),
         reload_cb(0) {
-    std::auto_ptr<GetterBase> const &prop = descr->prop;
+    std::unique_ptr<GetterBase> const &prop = descr->prop;
     std::string defval;
 
     switch (descr->type) {

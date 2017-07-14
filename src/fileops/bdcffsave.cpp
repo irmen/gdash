@@ -59,7 +59,7 @@ void save_properties(std::list<std::string> &out, Reflective &str, Reflective &s
 
     /* for all properties */
     for (unsigned i = 0; prop_desc[i].identifier != NULL; i++) {
-        std::auto_ptr<GetterBase> const &prop = prop_desc[i].prop;
+        std::unique_ptr<GetterBase> const &prop = prop_desc[i].prop;
 
         // used only by the gui, nothing to do
         if (prop_desc[i].type == GD_TAB || prop_desc[i].type == GD_LABEL)

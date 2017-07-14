@@ -83,13 +83,13 @@ void Screen::unregister_pixmap_storage(PixmapStorage *ps) {
 
 
 Pixmap *Screen::create_scaled_pixmap_from_pixbuf(const Pixbuf &pb, bool keep_alpha) const {
-    std::auto_ptr<Pixbuf> scaled(pixbuf_factory.create_scaled(pb, scaling_factor, scaling_type, pal_emulation));
+    std::unique_ptr<Pixbuf> scaled(pixbuf_factory.create_scaled(pb, scaling_factor, scaling_type, pal_emulation));
     return create_pixmap_from_pixbuf(*scaled, keep_alpha);
 }
 
 
 void Screen::blit_pixbuf(const Pixbuf &pb, int dx, int dy, bool keep_alpha) {
-    std::auto_ptr<Pixmap> pm(create_pixmap_from_pixbuf(pb, keep_alpha));
+    std::unique_ptr<Pixmap> pm(create_pixmap_from_pixbuf(pb, keep_alpha));
     blit(*pm, dx, dy);
 }
 

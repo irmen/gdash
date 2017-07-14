@@ -651,7 +651,7 @@ GdMainWindow::~GdMainWindow() {
 
 
 void gd_main_window_gtk_run(CaveSet *caveset, NextAction &na) {
-    std::auto_ptr<GdMainWindow> main_window(new GdMainWindow(true, na));
+    std::unique_ptr<GdMainWindow> main_window(new GdMainWindow(true, na));
 
     /* configure the app */
     main_window->app->caveset = caveset;
@@ -668,7 +668,7 @@ void gd_main_window_gtk_run(CaveSet *caveset, NextAction &na) {
 
 void gd_main_window_gtk_run_a_game(GameControl *game) {
     NextAction na = StartTitle;      // because the funcs below need one to work with
-    std::auto_ptr<GdMainWindow> main_window(new GdMainWindow(false, na));
+    std::unique_ptr<GdMainWindow> main_window(new GdMainWindow(false, na));
 
     /* configure */
     main_window->app->set_quit_event_command(new SetNextActionAndGtkQuitCommand(main_window->app, na, Quit));

@@ -58,7 +58,7 @@
 #define GAME_INT_COVER_ALL 108
 
 
-std::auto_ptr<CaveRendered> GameControl::snapshot_cave;   ///< Saved snapshot
+std::unique_ptr<CaveRendered> GameControl::snapshot_cave;   ///< Saved snapshot
 
 
 /// The default constructor which fills members with some initial values.
@@ -66,7 +66,7 @@ GameControl::GameControl() :
     player_score(0),
     player_lives(0),
     caveset(NULL),
-    played_cave(NULL),
+    played_cave(),
     original_cave(NULL),
     bonus_life_flash(0),
     statusbartype(status_bar_none),
@@ -112,7 +112,7 @@ GameControl *GameControl::new_snapshot() {
         throw std::logic_error("no snapshot");
 
     g->type = TYPE_SNAPSHOT;
-    g->played_cave = std::auto_ptr<CaveRendered> (new CaveRendered(*snapshot_cave));
+    g->played_cave = std::unique_ptr<CaveRendered> (new CaveRendered(*snapshot_cave));
 
     return g;
 }
@@ -199,13 +199,13 @@ void GameControl::load_cave() {
             original_cave = &caveset->cave(cave_num);
             /* for playing: seed=random */
             seed = g_random_int_range(0, GD_CAVE_SEED_MAX);
-            played_cave = std::auto_ptr<CaveRendered>(new CaveRendered(*original_cave, level_num, seed));
+            played_cave = std::unique_ptr<CaveRendered>(new CaveRendered(*original_cave, level_num, seed));
             played_cave->setup_for_game();
             if (played_cave->intermission && played_cave->intermission_instantlife)
                 add_bonus_life(false);
 
             /* create replay */
-            replay_record = std::auto_ptr<CaveReplay>(new CaveReplay);
+            replay_record = std::unique_ptr<CaveReplay>(new CaveReplay);
             replay_record->level = played_cave->rendered_on + 1; /* compatibility with bdcff - level=1 is written in file */
             replay_record->seed = played_cave->render_seed;
             replay_record->checksum = gd_cave_adler_checksum(*played_cave); /* calculate a checksum for this cave */
@@ -216,7 +216,7 @@ void GameControl::load_cave() {
 
         case TYPE_TEST:
             seed = g_random_int_range(0, GD_CAVE_SEED_MAX);
-            played_cave = std::auto_ptr<CaveRendered>(new CaveRendered(*original_cave, level_num, seed));
+            played_cave = std::unique_ptr<CaveRendered>(new CaveRendered(*original_cave, level_num, seed));
             played_cave->setup_for_game();
             break;
 
@@ -236,7 +236,7 @@ void GameControl::load_cave() {
             replay_no_more_movements = 0;
 
             /* -1 is because level=1 is in bdcff for level 1, and internally we number levels from 0 */
-            played_cave = std::auto_ptr<CaveRendered>(new CaveRendered(*original_cave, replay_from->level - 1, replay_from->seed));
+            played_cave = std::unique_ptr<CaveRendered>(new CaveRendered(*original_cave, replay_from->level - 1, replay_from->seed));
             played_cave->setup_for_game();
             break;
 
@@ -256,7 +256,7 @@ bool GameControl::save_snapshot() const {
     if (played_cave.get() == NULL)
         return false;
 
-    snapshot_cave = std::auto_ptr<CaveRendered>(new CaveRendered(*played_cave));
+    snapshot_cave = std::unique_ptr<CaveRendered>(new CaveRendered(*played_cave));
     return true;
 }
 
@@ -268,11 +268,10 @@ bool GameControl::load_snapshot() {
         return false;
 
     /* overwrite this object with a default one */
-    GameControl def;
-    *this = def;
+    *this = GameControl();
     /* and make it a snapshot */
     type = TYPE_SNAPSHOT;
-    played_cave = std::auto_ptr<CaveRendered>(new CaveRendered(*snapshot_cave));
+    played_cave = std::unique_ptr<CaveRendered>(new CaveRendered(*snapshot_cave));
 
     /* success */
     return true;

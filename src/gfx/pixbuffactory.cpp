@@ -89,7 +89,7 @@ Pixbuf *PixbufFactory::create_scaled(const Pixbuf &src, int scaling_factor, GdSc
                 case GD_SCALING_NEAREST:
                     /* 2x nearest applied twice. */
                     {
-                        std::auto_ptr<Pixbuf> scale2x(this->create(src.get_width() * 2, src.get_height() * 2));
+                        std::unique_ptr<Pixbuf> scale2x(this->create(src.get_width() * 2, src.get_height() * 2));
                         scale2xnearest(src, *scale2x);
                         scale2xnearest(*scale2x, *scaled);
                     }
@@ -97,7 +97,7 @@ Pixbuf *PixbufFactory::create_scaled(const Pixbuf &src, int scaling_factor, GdSc
                 case GD_SCALING_SCALE2X:
                     /* scale2x applied twice. */
                     {
-                        std::auto_ptr<Pixbuf> scale2xpb(this->create(src.get_width() * 2, src.get_height() * 2));
+                        std::unique_ptr<Pixbuf> scale2xpb(this->create(src.get_width() * 2, src.get_height() * 2));
                         scale2x(src, *scale2xpb);
                         scale2x(*scale2xpb, *scaled);
                     }

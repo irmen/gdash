@@ -678,13 +678,13 @@ void GameRenderer::drawstory() const {
         // create the pixbuf for it
         int w = screen.get_width() / screen.get_pixmap_scale(),
             h = screen.get_height() / screen.get_pixmap_scale();
-        std::auto_ptr<Pixbuf> background_pixbuf(screen.pixbuf_factory.create(w, h));
+        std::unique_ptr<Pixbuf> background_pixbuf(screen.pixbuf_factory.create(w, h));
         GdElementEnum bgcells[8] = { O_STONE, O_DIAMOND, O_BRICK, O_DIRT, O_SPACE, O_SPACE, O_DIRT, O_SPACE };
         int cs = cells.get_cell_pixbuf_size();
         for (int y = 0; y < h; y += cs)
             for (int x = 0; x < w; x += cs)
                 cells.cell_pixbuf(abs(gd_element_properties[bgcells[g_random_int_range(0, 7)]].image_game)).copy(*background_pixbuf, x, y);
-        std::auto_ptr<Pixbuf> dark_background_pixbuf(screen.pixbuf_factory.create_composite_color(*background_pixbuf, GdColor::from_rgb(0, 0, 0), 256 * 4 / 5));
+        std::unique_ptr<Pixbuf> dark_background_pixbuf(screen.pixbuf_factory.create_composite_color(*background_pixbuf, GdColor::from_rgb(0, 0, 0), 256 * 4 / 5));
         // this one should be the size of the screen again
         story.background.reset(screen.create_scaled_pixmap_from_pixbuf(*dark_background_pixbuf, false));
     }

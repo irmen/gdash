@@ -37,7 +37,7 @@
 #include "cave/titleanimation.hpp"
 
 std::vector<Pixbuf *> get_title_animation_pixbuf(const GdString &title_screen, const GdString &title_screen_scroll, bool one_frame_only, PixbufFactory &pixbuf_factory) {
-    typedef std::auto_ptr<Pixbuf> PixbufPtr;
+    typedef std::unique_ptr<Pixbuf> PixbufPtr;
 
     std::vector<Pixbuf *> animation;
 

@@ -106,12 +106,12 @@ Pixmap &CellRenderer::cell(unsigned i) {
                 cells[i] = screen.create_scaled_pixmap_from_pixbuf(pb, false);
                 break;
             case 1: {
-                std::auto_ptr<Pixbuf> colored(screen.pixbuf_factory.create_composite_color(pb, gd_flash_color));
+                std::unique_ptr<Pixbuf> colored(screen.pixbuf_factory.create_composite_color(pb, gd_flash_color));
                 cells[i] = screen.create_scaled_pixmap_from_pixbuf(*colored, false);
             }
             break;
             case 2: {
-                std::auto_ptr<Pixbuf> colored(screen.pixbuf_factory.create_composite_color(pb, gd_select_color));
+                std::unique_ptr<Pixbuf> colored(screen.pixbuf_factory.create_composite_color(pb, gd_select_color));
                 cells[i] = screen.create_scaled_pixmap_from_pixbuf(*colored, false);
             }
             break;
@@ -141,7 +141,7 @@ bool CellRenderer::is_pixbuf_ok_for_theme(const Pixbuf &surface) {
 bool CellRenderer::is_image_ok_for_theme(PixbufFactory &pixbuf_factory, const char *filename) {
     try {
         SetLoggerContextForFunction scf(filename);
-        std::auto_ptr<Pixbuf> image(pixbuf_factory.create_from_file(filename));
+        std::unique_ptr<Pixbuf> image(pixbuf_factory.create_from_file(filename));
         return is_pixbuf_ok_for_theme(*image);
     } catch (...) {
         return false;

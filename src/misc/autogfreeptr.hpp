@@ -27,7 +27,7 @@
 #include <glib.h>
 #include <algorithm>
 
-/// An auto_ptr-like class which uses g_free on the objects to be deleted.
+/// An unique_ptr-like class which uses g_free on the objects to be deleted.
 template <typename T>
 class AutoGFreePtr {
 private:

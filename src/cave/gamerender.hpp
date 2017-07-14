@@ -113,7 +113,7 @@ class GameRenderer : public PixmapStorage {
         std::vector<std::string> wrapped_text;
         int scroll_y, max_y;
         unsigned linesavailable;
-        std::auto_ptr<Pixmap> background;
+        std::unique_ptr<Pixmap> background;
     } mutable story;
 
     bool cave_scroll(int logical_size, int physical_size, int center, bool exact, double &current, int &desired, double & currspeed);

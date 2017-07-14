@@ -733,7 +733,7 @@ static void cave_properties(CaveStored *cave, gboolean show_cancel) {
             PropertyDescription const *descriptor = cave->get_description_array();
             for (unsigned i = 0; descriptor[i].identifier != NULL; i++)
                 if (descriptor[i].flags & GD_BDCFF_RATIO_TO_CAVE_SIZE) {
-                    std::auto_ptr<GetterBase> const &prop = descriptor[i].prop;
+                    std::unique_ptr<GetterBase> const &prop = descriptor[i].prop;
                     switch (descriptor[i].type) {
                         case GD_TYPE_INT:
                             if (cave->get<GdInt>(prop) >= cave->w * cave->h)

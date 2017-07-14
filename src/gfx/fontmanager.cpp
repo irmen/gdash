@@ -136,7 +136,7 @@ Pixmap *RenderedFontNarrow::render_character(int j) const {
     int y1 = (j / CHARS_X) * font_size;
     int x1 = (j % CHARS_X) * font_size;
 
-    std::auto_ptr<Pixbuf> image(screen.pixbuf_factory.create(font_size, font_size));
+    std::unique_ptr<Pixbuf> image(screen.pixbuf_factory.create(font_size, font_size));
     for (unsigned y = 0; y < font_size; y++) {
         guint32 *p = image->get_row(y);
         for (unsigned x = 0; x < font_size; x++) {
@@ -154,7 +154,7 @@ Pixmap *RenderedFontWide::render_character(int j) const {
     int y1 = (j / CHARS_X) * font_size;
     int x1 = (j % CHARS_X) * font_size;
 
-    std::auto_ptr<Pixbuf> image(screen.pixbuf_factory.create(font_size * 2, font_size));
+    std::unique_ptr<Pixbuf> image(screen.pixbuf_factory.create(font_size * 2, font_size));
     for (unsigned y = 0; y < font_size; y++) {
         guint32 *p = image->get_row(y);
         for (unsigned x = 0; x < font_size; x++) {

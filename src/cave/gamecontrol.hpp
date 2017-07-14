@@ -128,6 +128,10 @@ public:
     static GameControl *new_test(CaveStored *cave, int level);
     /// Named constructor.
     static GameControl *new_replay(CaveSet *caveset, CaveStored *cave, CaveReplay *replay);
+    GameControl& operator=(GameControl &&) = default;
+    GameControl& operator=(GameControl const &) = default;
+    GameControl(GameControl const &) = default;
+    GameControl(GameControl &&) = default;
     ~GameControl();
 
     /* functions to work on */
@@ -144,7 +148,7 @@ public:
     int player_lives;           ///< Remaining lives of player
 
     CaveSet *caveset;           ///< Caveset used to load next cave in normal games.
-    std::auto_ptr<CaveRendered> played_cave;  ///< Rendered version of the cave. This is the iterated one
+    std::unique_ptr<CaveRendered> played_cave;  ///< Rendered version of the cave. This is the iterated one
     CaveStored *original_cave;  ///< original cave from caveset. Used to record highscore, as it is associated with the original cave in the caveset.
 
     int bonus_life_flash;       ///< flashing for bonus life
@@ -159,7 +163,7 @@ public:
     bool caveset_has_levels;    ///< set to true in the constructor if the caveset has difficulty levels
 
 private:
-    std::auto_ptr<CaveReplay> replay_record;
+    std::unique_ptr<CaveReplay> replay_record;
     CaveReplay *replay_from;
     unsigned int cave_num;      ///< actual playing cave number
     unsigned int level_num;     ///< actual playing level
@@ -167,7 +171,7 @@ private:
     int milliseconds_game;      ///< here we remember, how many milliseconds have passed since we last iterated the cave
     int state_counter;          ///< counter used to control the game flow, rendering of caves
     
-    static std::auto_ptr<CaveRendered> snapshot_cave;   ///< Saved snapshot
+    static std::unique_ptr<CaveRendered> snapshot_cave;   ///< Saved snapshot
 
     void add_bonus_life(bool inform_user);
     void increment_score(int increment);

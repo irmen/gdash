@@ -41,9 +41,9 @@ public:
     unsigned const count;       ///< The size of the array pointed by the prop, or 1
 
     template <class KLASS, class MEMBERTYPE>
-    static std::auto_ptr<GetterBase> create_new(MEMBERTYPE KLASS::*ptr);
+    static std::unique_ptr<GetterBase> create_new(MEMBERTYPE KLASS::*ptr);
     template <class KLASS, class MEMBERTYPE, unsigned COUNT>
-    static std::auto_ptr<GetterBase> create_new(MEMBERTYPE(KLASS::*ptr)[COUNT]);
+    static std::unique_ptr<GetterBase> create_new(MEMBERTYPE(KLASS::*ptr)[COUNT]);
 
     virtual ~GetterBase() {}
 
@@ -144,8 +144,8 @@ MEMBERTYPE &Getter<KLASS, MEMBERTYPE>::get(Reflective &o) const {
  * @return A pointer to a newly allocated Getter, cast to GetterBase *.
  */
 template <class KLASS, class MEMBERTYPE>
-std::auto_ptr<GetterBase> GetterBase::create_new(MEMBERTYPE KLASS::*ptr) {
-    return std::auto_ptr<GetterBase>(new Getter<KLASS, MEMBERTYPE>(ptr, 1));
+std::unique_ptr<GetterBase> GetterBase::create_new(MEMBERTYPE KLASS::*ptr) {
+    return std::unique_ptr<GetterBase>(new Getter<KLASS, MEMBERTYPE>(ptr, 1));
 }
 
 /**
@@ -158,8 +158,8 @@ std::auto_ptr<GetterBase> GetterBase::create_new(MEMBERTYPE KLASS::*ptr) {
  * @return A pointer to a newly allocated Getter, cast to GetterBase *.
  */
 template <class KLASS, class MEMBERTYPE, unsigned COUNT>
-std::auto_ptr<GetterBase> GetterBase::create_new(MEMBERTYPE(KLASS::*ptr)[COUNT]) {
-    return std::auto_ptr<GetterBase>(new Getter<KLASS, MEMBERTYPE[COUNT]>(ptr, COUNT));
+std::unique_ptr<GetterBase> GetterBase::create_new(MEMBERTYPE(KLASS::*ptr)[COUNT]) {
+    return std::unique_ptr<GetterBase>(new Getter<KLASS, MEMBERTYPE[COUNT]>(ptr, COUNT));
 }
 
 /**
@@ -188,7 +188,7 @@ struct PropertyDescription {
     /// A Getter which can give this data item
     const char *name;
     /// Tooltip for data item, shown in editor.
-    std::auto_ptr<GetterBase> prop;
+    std::unique_ptr<GetterBase> prop;
     /// Name in the editor, shown to the user
     const char *tooltip;
     /// Minimum and maximum, for integers.
@@ -206,7 +206,7 @@ class Reflective {
 public:
     virtual PropertyDescription const *get_description_array() const = 0;
     virtual ~Reflective() {}
-    template <class MEMBERTYPE> MEMBERTYPE &get(std::auto_ptr<GetterBase> const &prop);
+    template <class MEMBERTYPE> MEMBERTYPE &get(std::unique_ptr<GetterBase> const &prop);
 };
 
 /**
@@ -219,7 +219,7 @@ public:
  * @param prop The prop which knows the data member
  */
 template <class MEMBERTYPE>
-MEMBERTYPE &Reflective::get(std::auto_ptr<GetterBase> const &prop) {
+MEMBERTYPE &Reflective::get(std::unique_ptr<GetterBase> const &prop) {
     return dynamic_cast<const GetterForType<MEMBERTYPE>&>(*prop).get(*this);
 }
 

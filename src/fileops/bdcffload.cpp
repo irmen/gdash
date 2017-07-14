@@ -59,7 +59,7 @@ bool struct_set_property(Reflective &str, const std::string &attrib, const std::
         if (gd_str_ascii_caseequal(prop_desc[i].identifier, attrib)) {
             /* found the identifier */
             identifier_found = true;
-            std::auto_ptr<GetterBase> const &prop = prop_desc[i].prop;
+            std::unique_ptr<GetterBase> const &prop = prop_desc[i].prop;
             if (prop_desc[i].type == GD_TYPE_STRING) {
                 /* strings are treated different, as occupy the whole length of the line */
                 str.get<GdString>(prop) = param;
